@@ -78,3 +78,85 @@ print("=== Chat Messages ===")
 for msg in messages:
     print(f" [{msg.type}]:{msg.content[:80]}")
 print()
+
+# -----------------------------------------------
+# 3. CHAINS - Connecting the Pieces with LCEL
+# -----------------------------------------------
+# LCEL = LangChain Expression Language = Connecting LangChain components together to build AI workflows.
+# The pipe | glues components into a pipeline. Each step's output flows into the next, left to right: prompt | model (LLM) | parser
+from langchain_core.output_parsers import StrOutputParser
+
+# prompt fills the blanks -> model answers -> parser pulls out clean text.
+# StrOutputParser juest extracts the plain string from the model's reply
+# object, so you don't have to write .content everytime
+chain = chat_template | model | StrOutputParser()
+
+# Run the whole pipeline with a single .invoke()
+result = chain.invoke({"concept": "list comprehension"})
+print("=== Chain Ouput ===")
+print(result)
+print()
+
+
+# -----------------------------------------------
+# 4. MEMORY - Giving the model context
+# -----------------------------------------------
+# Models are stateless - They forget everything between calls
+# "Memory" is simply as storing past messeges and feeding them back in
+# (Modern LangChain uses ChatMessageHistory; the old
+# ConversationBufferMemory is deprecated and out of the core package)
+
+from langchain_core.chat_history import InMemoryChatMessageHistory
+from langchain_core.messages import HumanMessage, AIMessage
+
+# A simple in-memory store that holds the conversation
+memory = InMemoryChatMessageHistory()
+
+# hand-build a short conversation so we have something to "remember"
+memory.add_message(HumanMessage(content="My name is Nuwan and I am learning LangChain"))
+memory.add_message(
+    AIMessage(content="Nice to meet you, Nuwan! LangChain is a great choice")
+)
+memory.add_message(HumanMessage(content="What tools should I learn first?"))
+memory.add_message(
+    AIMessage(
+        content="Start with PromptTemplates and simple chains, then move to tools and agents"
+    )
+)
+
+print("=== Memory Contents ===")
+for msg in memory.messages:
+    print(f"[{msg.type}]:{msg.content[:80]}...")
+print()
+
+
+# The "placeholder" slot is where the stored messages get injected into the
+# prompt, so the model can SEE the earlier conversation
+
+chat_with_memory = ChatPromptTemplate(
+    [
+        (
+            "system",
+            "You are a helpful tutor. Use the conversation history to personalized your response.",
+        ),
+        (
+            "placeholder",
+            "{history}",  # past messages get dropped in here
+        ),
+        ("human", "{question}"),
+    ]
+)
+
+chain_with_memory = chat_with_memory | model | StrOutputParser()
+
+# We pass the stored history in alongside the new question
+# Watch the model correctly recall the name "Nuwan" - that's "memory"
+
+result = chain_with_memory.invoke(
+    {"history": memory.messages, "question": "What was my name again?"}
+)
+
+
+print("=== Memory-Aware Response ===")
+print(result)
+print()
