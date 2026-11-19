@@ -1,0 +1,15 @@
+1. install modules
+pip install langchain langchain-openai python-dotenv
+
+
+2.Create an API key for OpenAI
+
+I Install llama3.2 modal to my local and run it and use it with langchain as follows
+
+pip install -U langchain-ollama
+
+1. https://ollama.com/download?utm_source=chatgpt.com
+2. install
+3. check the versiob after installation ollama --version
+4. download the preferred version ollama pull llama3.2
+5. Then use it
