@@ -69,3 +69,12 @@ chat_template = ChatPromptTemplate.from_messages(
         ("human", "Explain {concept} with a simple Python example"),
     ]
 )
+
+# .format_messages() fills the blanks and returns a LIST of messages
+
+messages = chat_template.format_messages(concept="list comprehension")
+# {concept} in the template is the empty blank, and concept="list comprehension" is you handing it the word that goes in the blank
+print("=== Chat Messages ===")
+for msg in messages:
+    print(f" [{msg.type}]:{msg.content[:80]}")
+print()
