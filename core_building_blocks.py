@@ -13,8 +13,8 @@ env_path = script_dir / ".env"
 load_dotenv(env_path)
 
 # Quick sanity check that the API key actually loaded before calls to the model
-# print(f"OPENAI_API_KEY found: {bool(os.getenv('OPENAI_API_KEY'))}")
-print(f"OPENAI_API_KEY found: {bool(os.getenv('CLAUDE_API_KEY'))}")
+print(f"OPENAI_API_KEY found: {bool(os.getenv('OPENAI_API_KEY'))}")
+# print(f"OPENAI_API_KEY found: {bool(os.getenv('CLAUDE_API_KEY'))}")
 
 
 # -----------------------------------------------
